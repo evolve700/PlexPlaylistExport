@@ -127,19 +127,7 @@ def export_playlist(playlist_name: str, baseurl: str, token: str, writeAlbumArti
             m3u.write('#EXTINF: %s,%s - %s\n' % (seconds, artist, title))
             m3u.write('%s\n' % part.file.replace('/music', '..'))
             m3u.write('\n')
-        
-        #if item.parentThumb != None:
-        #    print('\tcover: ' + item.parentThumb)
-        #    print('\timageUrl: ' + plex.transcodeImage(item.parentThumb, 256, 256))
-        #    item.download()
-        # if item.thumbUrl != None:
-        #     print('\tcover: ' + item.thumbUrl)        
-        #     plex.transcodeImage()
-            #plex.fetchItem()
-        
-        #print('streamUrl: ' + item.getStreamURL())
-        #print('artist: ' + item.grandparentTitle + ', title: ' + item.title + ', duration: ' + str(item.duration / 1000 / 60) + ', cover: ' + item.parentThumb)
-        # item.download()
+            
     m3u.close()
     print(' done')
 
@@ -181,6 +169,17 @@ def main():
         type = str,
         help = "The Token used to authenticate with the Plex Server",
         default = 'xxiaNX8rigEPYadJRrv3'
+    )
+    parser.add_argument(
+        '--plex-music-root-dir',
+        type = str,
+        help = "The root of the plex music library location, for instance '/music'",
+        default = '/music'
+    )
+    parser.add_argument(
+        '--replace-with-dir',
+        type = str,
+        help = "The string which we replace the plex music library root dir with. This could be a relative path for instance '..'."
     )
     
     args = parser.parse_args()
