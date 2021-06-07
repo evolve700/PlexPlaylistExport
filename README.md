@@ -43,7 +43,7 @@ If you like to know a bit more about my use-case, read on, otherwise you can ski
 > who gives a damn about audio quality is just s**t. The car however supports your typical audio files from MP3 to AAC, read
 > either from an internal disk or via USB flashdrive. And since I have the premium sound system for the car I want to have the best
 > possible audio output. Thus in my case: export the raw audio files, combine them with playlists and I get the most comparable Plex
-> experience on the road.
+> experience on the road with minimal (if any) loss in fidelity.
 
 ## How does it work?
 
@@ -98,6 +98,8 @@ get a meaning.*
 
 ### Optional arguments
 
+The following optional arguments can be supplied when combined with the `--playlist` argument:
+
 - `--write-album`: Outputs album information in `#EXTALB` lines in the M3U.
 - `--write-album-artist`: Outputs album artist information in `#EXTART` lines in the M3U.
 - `--asciify`: You might have to deal with a device that is not capable of displaying Unicode characters or just simply ignores lines that
@@ -122,7 +124,7 @@ thumbdrive. This is done by using
 beet move -e -d /path/to/export/to playlist:<yourplaylist>.m3u
 ```
 
-Notice the `-e` option which does an export instead of an actual move of your media. So in this case it will output all the media contained
+Notice the `-e` option which does an *export* instead of an actual move of your media. So in this case it will output all the media contained
 in `<yourplaylist>.m3u` to the path specified in `-d /path/to/export/to`. From there it is again *up to you* to place this data in such a way
 that it makes sense with the playlist you created.
 
