@@ -66,7 +66,7 @@ def list_playlists(baseurl: str, token: str):
     print(' done')
 
     print('')
-    print('Supply any of the following playlists to --create <playlist>:')
+    print('Supply any of the following playlists to --playlist <playlist>:')
     for item in playlists:
         if (item.playlistType == 'audio'):
             print('\t%s' % item.title)
