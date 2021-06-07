@@ -20,6 +20,18 @@ import plexapi
 from plexapi.server import PlexServer
 from unidecode import unidecode
 
+class ExportOptions():
+    def __init__(self, args):
+        self.host = args.host
+        self.token = args.token
+        self.playlist = args.playlist
+        self.asciify = args.asciify
+        self.writeAlbum = args.write_album
+        self.writeAlbumArtist = args.write_album_artist
+        self.plexMusicRoot = args.plex_music_root
+        self.replaceWithDir = args.replace_with_dir
+        pass
+
 def do_asciify(input):
     """ Converts a string to it's ASCII representation
     """
@@ -59,31 +71,13 @@ def list_playlists(baseurl: str, token: str):
         if (item.playlistType == 'audio'):
             print('\t%s' % item.title)
 
-def export_playlist(playlist_name: str, baseurl: str, token: str, writeAlbumArtist: bool, writeAlbum: bool, asciify: bool):
+def export_playlist(options: ExportOptions):
     """ Exports a given playlist from the specified Plex server in M3U format.
-
-    Parameters:
-    -----------
-    playlist_name : str
-        The name of the playlist to export.
-    baseurl : str
-        The URL of the Plex server where the playlist is located.
-    token : str
-        The token used to authorize with the Plex server.
-    writeAlbumArtist : bool
-        Whether to write Album-Artist information as #EXTART lines.
-        Default = false
-    writeAlbum : bool
-        Whether to write Album information as #EXTALB lines.
-        Default = false
-    asciify : bool
-        Whether to ASCII-fy #EXT<xxx> entries for compatibility with certain older hardware
-        Default = false.
     """
 
     print('Connecting to plex...', end='')
     try:
-        plex = PlexServer(baseurl, token)
+        plex = PlexServer(options.host, options.token)
     except (plexapi.exceptions.Unauthorized, requests.exceptions.ConnectionError):
         print(' failed')
         return
@@ -91,16 +85,16 @@ def export_playlist(playlist_name: str, baseurl: str, token: str, writeAlbumArti
 
     print('Getting playlist...', end='')
     try:
-        playlist = plex.playlist(playlist_name)
+        playlist = plex.playlist(options.playlist)
     except (plexapi.exceptions.NotFound):
         print(' failed')
         return
     print(' done')
 
-    
-    m3u = open('%s.m3u' % playlist.title, 'w')
+    playlist_title = do_asciify(playlist.title) if options.asciify else playlist.title
+    m3u = open('%s.m3u' % playlist_title, 'w')
     m3u.write('#EXTM3U\n')
-    m3u.write('#PLAYLIST: %s\n' % playlist.title)
+    m3u.write('#PLAYLIST:%s\n' % playlist_title)
     m3u.write('\n')
 
     print('Iterating playlist...', end='')
@@ -111,21 +105,21 @@ def export_playlist(playlist_name: str, baseurl: str, token: str, writeAlbumArti
     for item in items:    
         media = item.media[0]
         seconds = int(item.duration / 1000)
-        title = do_asciify(item.title) if asciify else item.title        
-        album = do_asciify(item.parentTitle) if asciify else item.parentTitle
-        artist = do_asciify(item.originalTitle) if asciify else item.originalTitle
-        albumArtist = do_asciify(item.grandparentTitle) if asciify else item.grandparentTitle
+        title = do_asciify(item.title) if options.asciify else item.title        
+        album = do_asciify(item.parentTitle) if options.asciify else item.parentTitle
+        artist = do_asciify(item.originalTitle) if options.asciify else item.originalTitle
+        albumArtist = do_asciify(item.grandparentTitle) if options.asciify else item.grandparentTitle
         if artist == None:
             artist = albumArtist        
 
         parts = media.parts
-        if writeAlbum:
-            m3u.write('#EXTALB: %s\n' % album)
-        if writeAlbumArtist:
-            m3u.write('#EXTART: %s\n' % albumArtist)
+        if options.writeAlbum:
+            m3u.write('#EXTALB:%s\n' % album)
+        if options.writeAlbumArtist:
+            m3u.write('#EXTART:%s\n' % albumArtist)
         for part in parts:
-            m3u.write('#EXTINF: %s,%s - %s\n' % (seconds, artist, title))
-            m3u.write('%s\n' % part.file.replace('/music', '..'))
+            m3u.write('#EXTINF:%s,%s - %s\n' % (seconds, artist, title))
+            m3u.write('%s\n' % part.file.replace(options.plexMusicRoot, options.replaceWithDir))
             m3u.write('\n')
             
     m3u.close()
@@ -171,7 +165,7 @@ def main():
         default = 'xxiaNX8rigEPYadJRrv3'
     )
     parser.add_argument(
-        '--plex-music-root-dir',
+        '--plex-music-root',
         type = str,
         help = "The root of the plex music library location, for instance '/music'",
         default = '/music'
@@ -179,14 +173,16 @@ def main():
     parser.add_argument(
         '--replace-with-dir',
         type = str,
-        help = "The string which we replace the plex music library root dir with. This could be a relative path for instance '..'."
+        help = "The string which we replace the plex music library root dir with in the M3U. This could be a relative path for instance '..'.",
+        default = '..'
     )
     
     args = parser.parse_args()
     if (args.list):
         list_playlists(args.host, args.token)
     else:
-        export_playlist(args.playlist, args.host, args.token, args.write_album_artist, args.write_album, args.asciify)
+        options = ExportOptions(args=args)
+        export_playlist(options)
 
 if __name__ == "__main__":
     main()
