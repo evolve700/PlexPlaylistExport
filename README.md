@@ -67,7 +67,10 @@ You may want to start by querying all available playlists that can be used for e
 playlists.
 
 To query your playlists run the script with:
-`python3 PlexPlaylistExport.py --host <baseurl> --token <yourtoken> --list`
+
+```bash
+python3 PlexPlaylistExport.py --host <baseurl> --token <yourtoken> --list
+```
 
 This will output all available playlists for export.
 
@@ -75,7 +78,9 @@ This will output all available playlists for export.
 
 To export a specific playlist you need to supply it's name to the script.
 
-`python3 PlexPlaylistExport.py --host <baseurl> --token <yourtoken> --playlist <yourplaylist> --plex-music-root-dir '/music' --replace-with-dir '..'`
+```bash
+python3 PlexPlaylistExport.py --host <baseurl> --token <yourtoken> --playlist <yourplaylist> --plex-music-root-dir '/music' --replace-with-dir '..'
+```
 
 So you might wonder what is `--plex-music-root-dir` and `--replace-with-dir`.
 The first one is the root path to the music library in your Plex environment. Let's assume you have your music in Plex setup such
@@ -85,7 +90,7 @@ to a file in your Plex environment might look like `/music/beets/<artist>/<album
 In order to work with the M3U playlists we intend to create you might have to adjust that path so that it works for the M3U as well.
 The second argument allows you to specify a replacement for the Plex music root described above. So you can supply for instance
 `--replace-with-dir '..'` and the paths created in the M3U will be of the `../beets/<artist>/<album>/<title>.ext` format. As you
-can see we simply replace `/music` with `..` so you have relative paths in the created playlists.
+can see we simply replace `/music` with `..` so you have *relative paths* in the created playlists.
 
 Executing this command will create a file named `<yourplaylist>.m3u` in the working directory where you executed the command.
 *Now the M3U playlist might not be useful in this location and it is up to you to place it somewhere where the paths specified in it
@@ -103,16 +108,23 @@ get a meaning.*
 ## Addendum: Exporting your music with beets
 
 This is not really part of my script and thus I don't really see this as a must for this documentation but for completeness sake
-I will finish up with what I'm doing now after I exported my playlist to M3U. To export one such M3U playlist, you have to have the `playlist`
-plugin setup correctly in beets. Copy the playlist you exported with this script to the playlist directory you specified in the beets config.
-Then change your working directory to this path and run for instance `beet ls playlist:<yourplaylist>.m3u`. If everything is setup correctly,
-beets should output all the media contained in this playlist. If not, make sure all your paths are set up correctly.
+I will finish up with what I'm doing now after I exported my playlist to M3U.
+
+To export one such M3U playlist, you have to have the `playlist` plugin setup correctly in beets. Copy the playlist you exported
+with this script to the playlist directory you specified in the beets config. Then change your working directory to this path and run for
+instance `beet ls playlist:<yourplaylist>.m3u`. If everything is setup correctly, beets should output all the media contained in this
+playlist. If not, make sure all your paths are set up correctly.
 
 Good, now that the above command works, I usually export the entire playlist (or multiple playlists) so that I can move them to a USB
-thumbdrive. This is done by using `beet move -e -d /path/to/export/to playlist:<yourplaylist>.m3u`. Notice the `-e` option which does an
-export instead of an actual move of your media. So in this case it will output all the media contained in `<yourplaylist>.m3u` to the path
-specified in `-d /path/to/export/to`. From there it is again up to you to place this data in such a way that it makes sense with the playlist
-you created.
+thumbdrive. This is done by using
+
+```bash
+beet move -e -d /path/to/export/to playlist:<yourplaylist>.m3u
+```
+
+Notice the `-e` option which does an export instead of an actual move of your media. So in this case it will output all the media contained
+in `<yourplaylist>.m3u` to the path specified in `-d /path/to/export/to`. From there it is again *up to you* to place this data in such a way
+that it makes sense with the playlist you created.
 
 For me this is usually the following structure:
 
@@ -122,5 +134,5 @@ For me this is usually the following structure:
   - /playlists
 ```
 
-where in `/beets` I have the structure as exported by the `beet move` command from above and in `/playlists` I have all my playlists
+where in `/beets` I have the structure as exported by the `beet move -e` command from above and in `/playlists` I have all my playlists
 created with this script. With the default setup of the `..`-relative-paths this should work really well and it does for me and my car.
