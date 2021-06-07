@@ -2,8 +2,7 @@
 
 A small python script to export *music* playlists created on a [Plex](https://www.plex.tv/) media server to the M3U format for use
 in external software (VLC, etc.) or hardware (MP3 players, Flash drives, Car infotainment systems, etc.) players.
-*The script only generates the M3U and does not actually export the media itself.* The export of the media itself is done using
-[beets](https://beets.readthedocs.io/en/stable/index.html).
+*The script only generates the M3U and does not actually export the media itself.* The export of the media itself is done using [beets](https://beets.readthedocs.io/en/stable/index.html).
 
 If this means nothing to you, you can probably stop reading right now.
 Otherwise, go ahead, you might have a similar use-case as me.
@@ -13,13 +12,14 @@ Otherwise, go ahead, you might have a similar use-case as me.
 ### High-Level
 
 This script was originally created to work in tandem with the following software:
-    - [beets: the music geek’s media organizer](https://beets.readthedocs.io/en/stable/index.html):
-      This is *the* go-to music organizer and I can recommend it to anyone who wants to bring order into the chaos that is probably
-      most peoples music library. Specifically useful in my workflow is the export feature provided by beets 'move' command in
-      combination with the [playlist](https://beets.readthedocs.io/en/stable/plugins/playlist.html) plugin.
-    - [Plex Media Server](https://www.plex.tv/)
-      As introduced above, Plex is my go-to media frontend I use on Smart TVs, Phones, Tablets, PCs, Laptops, you name it. Well
-      everything except for my car. So I create all my playlists using Plex.
+
+- [beets: the music geek’s media organizer](https://beets.readthedocs.io/en/stable/index.html):
+  This is *the* go-to music organizer and I can recommend it to anyone who wants to bring order into the chaos that is probably
+  most peoples music library. Specifically useful in my workflow is the export feature provided by beets 'move' command in
+  combination with the [playlist](https://beets.readthedocs.io/en/stable/plugins/playlist.html) plugin.
+- [Plex Media Server](https://www.plex.tv/):
+  As introduced above, Plex is my go-to media frontend I use on Smart TVs, Phones, Tablets, PCs, Laptops, you name it. Well
+  everything except for my car. So I create all my playlists using Plex.
 
 If you use beets to organize your music and this directly feeds into your Plex media server, you're good to go and this
 script might actually help you.
@@ -49,10 +49,10 @@ If you like to know a bit more about my use-case, read on, otherwise you can ski
 
 So we have established you need
 
-- Your music library is organized using beets and you have the `playlist` plugin configured and ready to use.
+- A music library that is organized using beets and you have the `playlist` plugin configured and ready to use.
 - Your Plex music library is created based on the folder structure provided by beets and you have playlist(s) set up for this library.
 
-If this holds true for you then you might be able to use this script with your plex server.
+If this holds true for you then you might be able to use this script with your Plex server.
 So what else do you need to get started:
 
 1. Your Plex server base URL (in your local network, i.e., `http://192.168.0.10:32400`), which you provide to script
