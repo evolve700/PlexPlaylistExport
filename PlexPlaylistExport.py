@@ -17,6 +17,7 @@ Requirements
 import argparse
 import requests
 import plexapi
+import codecs
 from plexapi.server import PlexServer
 from unidecode import unidecode
 
@@ -92,7 +93,9 @@ def export_playlist(options: ExportOptions):
     print(' done')
 
     playlist_title = do_asciify(playlist.title) if options.asciify else playlist.title
-    m3u = open('%s.m3u' % playlist_title, 'w')
+    extension = "m3u" if options.asciify else "m3u8"
+    encoding = "ascii" if options.asciify else "utf-8-sig"
+    m3u = open('%s.%s' % (playlist_title, extension), 'w', encoding=encoding)
     m3u.write('#EXTM3U\n')
     m3u.write('#PLAYLIST:%s\n' % playlist_title)
     m3u.write('\n')
