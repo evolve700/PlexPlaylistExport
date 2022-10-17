@@ -31,6 +31,7 @@ class ExportOptions():
         self.writeAlbumArtist = args.write_album_artist
         self.plexMusicRoot = args.plex_music_root
         self.replaceWithDir = args.replace_with_dir
+        self.user = args.switch_user
         pass
 
 def do_asciify(input):
@@ -50,17 +51,26 @@ def do_asciify(input):
     replaced = unidecode(replaced)
     return replaced
 
-def list_playlists(baseurl: str, token: str):
+def list_playlists(options: ExportOptions):
     """ Lists all 'audio' playlists on the given Plex server
     """
 
     print('Connecting to plex...', end='')
     try:
-        plex = PlexServer(baseurl, token)
+        plex = PlexServer(options.host, options.token)
     except (plexapi.exceptions.Unauthorized, requests.exceptions.ConnectionError):
         print(' failed')
         return
     print(' done')
+    
+    if options.user != None:
+        print('Switching to managed account %s...' % options.user, end='')
+        try:
+            plex = plex.switchUser(options.user)
+        except (plexapi.exceptions.Unauthorized, requests.exceptions.ConnectionError):
+            print(' failed')
+            return
+        print(' done')
 
     print('Getting playlists... ', end='')
     playlists = plex.playlists()
@@ -83,6 +93,15 @@ def export_playlist(options: ExportOptions):
         print(' failed')
         return
     print(' done')
+    
+    if options.user != None:
+        print('Switching to managed account %s...' % options.user, end='')
+        try:
+            plex = plex.switchUser(options.user)
+        except (plexapi.exceptions.Unauthorized, requests.exceptions.ConnectionError):
+            print(' failed')
+            return
+        print(' done')
 
     print('Getting playlist...', end='')
     try:
@@ -94,7 +113,7 @@ def export_playlist(options: ExportOptions):
 
     playlist_title = do_asciify(playlist.title) if options.asciify else playlist.title
     extension = "m3u" if options.asciify else "m3u8"
-    encoding = "ascii" if options.asciify else "utf-8-sig"
+    encoding = "ascii" if options.asciify else "utf-8"
     m3u = open('%s.%s' % (playlist_title, extension), 'w', encoding=encoding)
     m3u.write('#EXTM3U\n')
     m3u.write('#PLAYLIST:%s\n' % playlist_title)
@@ -165,7 +184,7 @@ def main():
         '--token',
         type = str,
         help = "The Token used to authenticate with the Plex Server",
-        default = 'xxiaNX8rigEPYadJRrv3'
+        default = 'qwAUDPoVCf4x1KJ9GJbJ'
     )
     parser.add_argument(
         '--plex-music-root',
@@ -179,12 +198,18 @@ def main():
         help = "The string which we replace the plex music library root dir with in the M3U. This could be a relative path for instance '..'.",
         default = '..'
     )
+    parser.add_argument(
+        '-u', '--switch-user',
+        type = str,
+        help = "Optional: The Managed User Account you want to switch to upon connect."
+    )
     
     args = parser.parse_args()
+    options = ExportOptions(args=args)
+
     if (args.list):
-        list_playlists(args.host, args.token)
+        list_playlists(options)
     else:
-        options = ExportOptions(args=args)
         export_playlist(options)
 
 if __name__ == "__main__":
